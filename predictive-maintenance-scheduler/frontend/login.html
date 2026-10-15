@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive Maintenance | Login</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#38bdf8;--violet:#8b5cf6;--muted:#94a3b8}
+body{font-family:Arial,Helvetica,sans-serif;min-height:100vh;background:#05070d;color:#f8fafc;display:flex;align-items:center;justify-content:center;padding:28px;overflow-x:hidden}
+body:before{content:"";position:fixed;width:480px;height:480px;top:-180px;left:-140px;background:#2563eb22;filter:blur(100px);border-radius:50%;pointer-events:none}
+body:after{content:"";position:fixed;width:450px;height:450px;bottom:-200px;right:-100px;background:#7c3aed22;filter:blur(110px);border-radius:50%;pointer-events:none}
+.container{position:relative;z-index:1;width:100%;max-width:1080px;display:grid;grid-template-columns:1fr 430px;gap:65px;align-items:center}
+.brand{padding:20px 0}
+.logo{width:66px;height:66px;display:grid;place-items:center;border:1px solid #38bdf855;background:#0c1727;border-radius:20px;color:var(--blue);box-shadow:0 0 35px #0ea5e922;margin-bottom:28px}
+.logo svg{width:38px;height:38px}
+.eyebrow{font-size:11px;letter-spacing:4px;color:var(--blue);font-weight:bold;margin-bottom:18px}
+h1{font-size:clamp(34px,4vw,52px);line-height:1.12;letter-spacing:-1.5px;margin-bottom:20px}
+h1 span{background:linear-gradient(90deg,#38bdf8,#a78bfa);background-clip:text;-webkit-background-clip:text;color:transparent}
+.description{max-width:450px;color:#94a3b8;line-height:1.8;font-size:15px}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:36px;max-width:480px}
+.feature{padding:16px;background:#0b101b;border:1px solid #1e293b;border-radius:13px}
+.feature-icon{font-size:22px;margin-bottom:12px}
+.feature h3{font-size:13px;margin-bottom:6px}
+.feature p{font-size:11px;line-height:1.6;color:var(--muted)}
+.status{display:flex;align-items:center;gap:9px;margin-top:28px;font-size:12px;color:#94a3b8}
+.dot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 12px #34d399}
+.card{background:linear-gradient(145deg,#111827,#090d16);border:1px solid #273449;border-radius:23px;padding:32px;box-shadow:0 25px 80px #0008}
+.card-header{text-align:center;margin-bottom:28px}
+.small-logo{margin:0 auto 17px;width:52px;height:52px;border-radius:16px;background:#0c1b2c;border:1px solid #38bdf844;display:grid;place-items:center;color:var(--blue)}
+.small-logo svg{width:30px;height:30px}
+.card-header h2{font-size:27px;margin-bottom:9px}
+.card-header p{font-size:13px;color:var(--muted)}
+.role-label,.field-label{font-size:12px;color:#cbd5e1;font-weight:bold;display:block;margin-bottom:10px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:23px}
+.role{border:1px solid #29364a;border-radius:12px;padding:14px 9px;background:#0a0f19;color:#cbd5e1;cursor:pointer;text-align:center;transition:.2s}
+.role .symbol{font-size:23px;display:block;margin-bottom:8px}
+.role strong{font-size:12px}
+.role small{display:block;font-size:10px;color:#94a3b8;margin-top:6px}
+.role.active{border-color:var(--blue);background:#0ea5e912;box-shadow:inset 0 0 20px #0ea5e908;color:#7dd3fc}
+.field{margin-bottom:19px}
+.input-wrap{position:relative}
+.input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#64748b;font-size:17px}
+input{width:100%;padding:14px 42px 14px 43px;background:#080d16;border:1px solid #29364a;border-radius:10px;color:white;font-size:13px;outline:none;transition:.2s}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #38bdf815}
+input::placeholder{color:#64748b}
+.show-password{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:0;background:none;color:#94a3b8;cursor:pointer;font-size:17px}
+.options{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 0 23px;font-size:11px;color:#94a3b8}
+.remember{display:flex;align-items:center;gap:7px}
+.remember input{width:14px;height:14px;padding:0;accent-color:#38bdf8}
+a{color:#7dd3fc;text-decoration:none}
+a:hover{text-decoration:underline}
+.login-btn{width:100%;padding:15px;border:0;border-radius:10px;background:linear-gradient(100deg,#0284c7,#6366f1);color:white;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 8px 25px #2563eb25;transition:.2s}
+.login-btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.login-btn span{margin-left:8px}
+.divider{display:flex;align-items:center;gap:13px;color:#64748b;font-size:10px;letter-spacing:2px;margin:23px 0}
+.divider:before,.divider:after{content:"";height:1px;background:#263244;flex:1}
+.register{display:block;text-align:center;border:1px solid #29364a;border-radius:10px;padding:13px;font-size:12px;color:#cbd5e1}
+.register strong{color:#7dd3fc}
+#message{font-size:12px;text-align:center;line-height:1.5;margin-top:14px;color:#fca5a5}
+.footer{text-align:center;margin-top:25px;color:#475569;font-size:10px;letter-spacing:1px}
+@media(max-width:850px){.container{grid-template-columns:1fr;max-width:460px;gap:25px}.brand{text-align:center;padding:0}.logo{margin:0 auto 20px}.description{margin:auto}.features{margin:25px auto 0;text-align:left}.status{justify-content:center}.brand h1{font-size:35px}.card{padding:27px 23px}}
+@media(max-width:390px){body{padding:14px}.features{gap:8px}.feature{padding:12px}.card{padding:23px 17px}.options{font-size:10px}}
+</style>
+</head>
+<body>
+<main class="container">
+<section class="brand">
+<div class="logo">
+<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M18 4h12l2 5 5 2 5-1 5 9-3 4 0 5 3 4-5 9-5-1-5 2-2 5H18l-2-5-5-2-5 1-5-9 3-4v-5l-3-4 5-9 5 1 5-2z" transform="translate(3 0) scale(.86)"/>
+<path d="M9 25h7l4-9 5 17 4-10h10"/>
+</svg>
+</div>
+<p class="eyebrow">INDUSTRY 4.0 · INTELLIGENT OPERATIONS</p>
+<h1>Predictive<br><span>Maintenance</span><br>Task Scheduler</h1>
+<p class="description">Anticipate failures before they happen. Monitor machine health, prioritize maintenance, and keep your operations running smoothly.</p>
+<div class="features">
+<div class="feature"><div class="feature-icon">⌁</div><h3>Predict Failures</h3><p>Machine risk analysis powered by ML.</p></div>
+<div class="feature"><div class="feature-icon">◷</div><h3>Smart Scheduling</h3><p>Prioritize jobs and technician allocation.</p></div>
+<div class="feature"><div class="feature-icon">⬡</div><h3>Spare Parts</h3><p>Track inventory and stock availability.</p></div>
+<div class="feature"><div class="feature-icon">⛨</div><h3>Reduce Downtime</h3><p>Plan maintenance with better visibility.</p></div>
+</div>
+<div class="status"><span class="dot"></span> Intelligent monitoring for your factory</div>
+</section>
+<section>
+<div class="card">
+<div class="card-header">
+<div class="small-logo">
+<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19"/><path d="M7 25h9l4-9 6 17 4-10h9"/></svg>
+</div>
+<h2>Welcome back</h2>
+<p>Sign in to access your workspace</p>
+</div>
+<form id="loginForm">
+<label class="field-label">Select your role</label>
+<div class="roles">
+<button class="role active" type="button" data-role="user" aria-pressed="true"><span class="symbol">♙</span><strong>Factory User</strong><small>Report machine issues</small></button>
+<button class="role" type="button" data-role="technician" aria-pressed="false"><span class="symbol">⚒</span><strong>Technician</strong><small>Manage assigned jobs</small></button>
+</div>
+<div class="field">
+<label class="field-label" for="email">Email address</label>
+<div class="input-wrap"><span class="input-icon">✉</span><input id="email" type="email" placeholder="you@company.com" autocomplete="username" required></div>
+</div>
+<div class="field">
+<label class="field-label" for="password">Password</label>
+<div class="input-wrap"><span class="input-icon">♙</span><input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><button class="show-password" type="button" id="togglePassword" aria-label="Show password">◎</button></div>
+</div>
+<div class="options"><label class="remember"><input type="checkbox" id="remember"> Remember me</label><a href="#" id="forgotLink">Forgot password?</a></div>
+<button class="login-btn" type="submit">Sign in <span>→</span></button>
+<p id="message" role="status" aria-live="polite"></p>
+</form>
+<div class="divider">OR</div>
+<a class="register" href="#" id="registerLink">＋ &nbsp; <strong>Create an account</strong><br><span id="registerHint">For new factory users</span></a>
+</div>
+<div class="footer">MONITOR &nbsp; / &nbsp; PREDICT &nbsp; / &nbsp; MAINTAIN</div>
+</section>
+</main>
+<script>
+let selectedRole="user";
+document.querySelectorAll(".role").forEach(button=>{
+button.addEventListener("click",()=>{
+selectedRole=button.dataset.role;
+document.querySelectorAll(".role").forEach(item=>{
+const active=item===button;
+item.classList.toggle("active",active);
+item.setAttribute("aria-pressed",String(active));
+});
+document.getElementById("registerHint").textContent=selectedRole==="user"?"For new factory users":"Technician accounts require administrator access";
+document.getElementById("message").textContent="";
+});
+});
+document.getElementById("togglePassword").addEventListener("click",()=>{
+const field=document.getElementById("password");
+const visible=field.type==="password";
+field.type=visible?"text":"password";
+document.getElementById("togglePassword").setAttribute("aria-label",visible?"Hide password":"Show password");
+});
+
+document.getElementById("loginForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
+
+    if (!email || !password) {
+        message.textContent = "Please enter your email and password.";
+        return;
+    }
+
+    // Temporary navigation only; real authentication comes next.
+    sessionStorage.setItem("selectedRole", selectedRole);
+    window.location.href = "index.html";
+});
+
+document.getElementById("forgotLink").addEventListener("click",event=>{
+event.preventDefault();
+document.getElementById("message").textContent="Password recovery will be available after backend authentication is configured.";
+});
+document.getElementById("registerLink").addEventListener("click",event=>{
+event.preventDefault();
+document.getElementById("message").textContent=selectedRole==="user"?"User registration will be connected in the next step.":"Technician accounts must be created by an administrator.";
+});
+</script>
+</body>
+</html>

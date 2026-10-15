@@ -1,0 +1,9 @@
+sqlalchemy
+pymysql
+joblib
+scikit-learn
+pandas
+numpy
+fastapi
+uvicorn[standard]
+python-dotenv

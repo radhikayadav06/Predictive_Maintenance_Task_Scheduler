@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Predictive Maintenance Scheduler</title>
+    <style>
+
+        * { box-sizing: border-box; }
+        body {
+
+            margin: 0;
+
+            font-family: Arial, sans-serif;
+
+            background: #f1f5f9;
+
+            color: #172033;
+
+        }
+        header {
+
+            background: #111c35;
+
+            color: white;
+
+            padding: 22px 7%;
+
+        }
+        header h1 { margin: 0 0 7px; font-size: 25px; }
+
+        header p { margin: 0; color: #cbd5e1; }
+        main {
+
+            max-width: 1100px;
+
+            margin: 30px auto;
+
+            padding: 0 18px;
+
+        }
+        .status, .card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            box-shadow: 0 5px 18px #1720330d;
+
+        }
+        .status {
+
+            padding: 15px 20px;
+
+            margin-bottom: 22px;
+
+            border-left: 5px solid #0d9488;
+
+        }
+        .layout {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+            gap: 22px;
+
+        }
+        .card { padding: 24px; }
+
+        h2 { margin-top: 0; font-size: 19px; }
+        label {
+
+            display: block;
+
+            margin: 15px 0 7px;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+        }
+        input, select {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #cbd5e1;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            background: white;
+
+        }
+        button {
+
+            padding: 12px 15px;
+
+            margin-top: 18px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+        button:hover { background: #1d4ed8; }
+
+        button:disabled { opacity: 0.6; cursor: wait; }
+
+        .full-button { width: 100%; }
+        .metric {
+
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border-radius: 9px;
+
+            margin-top: 15px;
+
+        }
+        .metric span { color: #64748b; font-size: 13px; }
+
+        .metric h3 { margin: 8px 0 0; font-size: 25px; }
+        #message {
+
+            margin-top: 15px;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            overflow-wrap: anywhere;
+
+        }
+        .note {
+
+            margin-top: 20px;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:0 0 22px; }
+        .summary-card { background:white; border-radius:12px; padding:20px; box-shadow:0 5px 18px #1720330d; border-top:4px solid #2563eb; }
+        .summary-card span { display:block; color:#64748b; font-size:13px; }
+        .summary-card strong { display:block; font-size:28px; margin-top:8px; }
+        .analytics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px; margin-bottom:22px; }
+        .chart-row { display:grid; grid-template-columns:82px 1fr 28px; align-items:center; gap:10px; margin:14px 0; font-size:13px; }
+        .bar-track { background:#e2e8f0; height:13px; border-radius:99px; overflow:hidden; }
+        .bar-fill { height:100%; width:0; border-radius:99px; background:#2563eb; transition:width .25s ease; }
+        .bar-fill.critical { background:#dc2626; } .bar-fill.high { background:#ea580c; }
+        .bar-fill.medium { background:#ca8a04; } .bar-fill.low { background:#0d9488; }
+        .analytics-note { color:#64748b; font-size:12px; line-height:1.5; }
+
+        .history-card { margin-top: 22px; overflow: hidden; }
+
+        .table-wrap { overflow-x: auto; }
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            font-size: 13px;
+
+        }
+        th, td {
+
+            padding: 12px;
+
+            border-bottom: 1px solid #e2e8f0;
+
+            text-align: left;
+
+            white-space: nowrap;
+
+        }
+        th { background: #f8fafc; color: #475569; }
+        .risk-high, .priority-critical {
+
+            color: #dc2626;
+
+            font-weight: bold;
+
+        }
+        .risk-normal, .priority-low {
+
+            color: #0d9488;
+
+            font-weight: bold;
+
+        }
+        .priority-high {
+
+            color: #ea580c;
+
+            font-weight: bold;
+
+        }
+        .priority-medium {
+
+            color: #d97706;
+
+            font-weight: bold;
+
+        }
+        footer {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #64748b;
+
+            font-size: 13px;
+
+        }
+        .job-status {
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 20px 5%; }
+            header h1 { font-size: 22px; }
+            main { margin: 20px auto; padding: 0 12px; }
+            .card { padding: 18px; }
+        }
+        .stock-good {
+            color: #0d9488;
+            font-weight: bold;
+        }
+        .stock-low {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .inventory-meta {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+/* ===== DARK INDUSTRIAL DASHBOARD THEME ===== */
+:root{
+    --bg:#060912;
+    --panel:#0e1422;
+    --panel2:#111b2d;
+    --border:#26334a;
+    --text:#e8eefb;
+    --muted:#94a3b8;
+    --blue:#38bdf8;
+    --violet:#8b5cf6;
+}
+body{
+    background:radial-gradient(ellipse at top left,#10203a 0%,var(--bg) 48%);
+    color:var(--text);
+    font-family:Inter,"Segoe UI",Arial,sans-serif;
+    min-height:100vh;
+}
+header{
+    background:linear-gradient(115deg,#0b1220,#111a2c);
+    border-bottom:1px solid var(--border);
+    padding:27px 5%;
+    position:relative;
+}
+header h1{
+    font-size:clamp(23px,3vw,32px);
+    letter-spacing:-.8px;
+    margin-bottom:10px;
+    background:linear-gradient(90deg,#f8fafc,#7dd3fc);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+header p{color:var(--muted);font-size:14px}
+main{max-width:1450px;margin:28px auto;padding:0 24px}
+.status,.card,.summary-card{
+    background:linear-gradient(145deg,#111a2a,#0b111d);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:0 12px 35px #0003;
+    color:var(--text);
+}
+.status{
+    border-left:4px solid #34d399;
+    padding:17px 20px;
+}
+.layout,.analytics-grid{gap:20px}
+.card{padding:24px;transition:border-color .2s,transform .2s}
+.card:hover,.summary-card:hover{
+    border-color:#38bdf855;
+}
+h2{font-size:18px;letter-spacing:-.25px}
+.card>p:not(.note):not(.analytics-note):not(.inventory-meta){
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.7;
+}
+.dashboard-grid{
+    gap:16px;
+    margin:0 0 22px;
+}
+.summary-card{
+    padding:22px;
+    border-top:2px solid var(--blue);
+    position:relative;
+    overflow:hidden;
+}
+.summary-card:nth-child(2){border-top-color:#8b5cf6}
+.summary-card:nth-child(3){border-top-color:#f59e0b}
+.summary-card:nth-child(4){border-top-color:#34d399}
+.summary-card span{color:var(--muted);font-size:12px}
+.summary-card strong{
+    color:#f8fafc;
+    font-size:32px;
+    letter-spacing:-1px;
+}
+label{color:#cbd5e1}
+input,select{
+    background:#080e19;
+    color:var(--text);
+    border:1px solid #334155;
+    border-radius:9px;
+    transition:border-color .2s,box-shadow .2s;
+}
+input:focus,select:focus{
+    outline:none;
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px #38bdf81a;
+}
+input[type=number]{color-scheme:dark}
+button{
+    background:linear-gradient(100deg,#0284c7,#6366f1);
+    border:1px solid #60a5fa30;
+    border-radius:9px;
+    padding:12px 17px;
+    transition:filter .2s,transform .2s;
+}
+button:hover{
+    background:linear-gradient(100deg,#0ea5e9,#7c3aed);
+    transform:translateY(-1px);
+}
+button:disabled{transform:none}
+.metric{
+    background:#090f1b;
+    border:1px solid #202d42;
+    border-radius:11px;
+    padding:17px;
+}
+.metric span{color:var(--muted)}
+.metric h3{color:#f8fafc;font-size:23px}
+#message{color:#cbd5e1}
+.note,.analytics-note,.inventory-meta{color:var(--muted)}
+.bar-track{background:#202c40}
+.bar-fill{background:linear-gradient(90deg,#0284c7,#8b5cf6)}
+.bar-fill.critical{background:#ef4444}
+.bar-fill.high{background:#f97316}
+.bar-fill.medium{background:#eab308}
+.bar-fill.low{background:#10b981}
+.table-wrap{
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-top:12px;
+}
+table{font-size:13px}
+th{
+    background:#141f32;
+    color:#a5c8ed;
+    font-weight:600;
+    border-bottom:1px solid #334155;
+}
+td{
+    color:#dbe5f4;
+    border-bottom:1px solid #202b3e;
+}
+tbody tr{background:#0c1320;transition:background .2s}
+tbody tr:nth-child(even){background:#101929}
+tbody tr:hover{background:#17263b}
+.risk-high,.priority-critical{color:#fb7185}
+.risk-normal,.priority-low,.stock-good{color:#34d399}
+.priority-high{color:#fb923c}
+.priority-medium{color:#facc15}
+.stock-low{color:#fb7185}
+.history-card{margin-top:22px;overflow:hidden}
+footer{
+    color:#64748b;
+    border-top:1px solid var(--border);
+    margin-top:40px;
+}
+@media(max-width:600px){
+    header{padding:22px 5%}
+    main{margin:20px auto;padding:0 12px}
+    .card{padding:17px}
+    .summary-card{padding:16px}
+    .summary-card strong{font-size:26px}
+}
+
+
+</style>
+</head>
+<body>
+
+<header>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+        <div>
+            <h1>⚙ Predictive Maintenance Task Scheduler</h1>
+            <p>Machine Intelligence · Failure Prediction · Smart Maintenance</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+            <span id="currentRole" style="color:#7dd3fc;font-size:13px">Dashboard</span>
+            <button id="logoutButton" type="button" style="margin:0">Logout ↗</button>
+        </div>
+    </div>
+</header>
+
+<main>
+
+    <div class="status">
+        <strong>System:</strong>
+        <span id="apiStatus">Checking backend connection...</span>
+    </div>
+
+    <!-- Dashboard Summary -->
+    <section id="summarySection" aria-label="Dashboard summary">
+        <div class="dashboard-grid">
+            <div class="summary-card">
+                <span>Readings loaded</span>
+                <strong id="metricReadings">—</strong>
+            </div>
+            <div class="summary-card">
+                <span>Machines with readings</span>
+                <strong id="metricMachines">—</strong>
+            </div>
+            <div class="summary-card">
+                <span>Pending maintenance jobs</span>
+                <strong id="metricPending">—</strong>
+            </div>
+            <div class="summary-card">
+                <span>Scheduled / active jobs</span>
+                <strong id="metricScheduled">—</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics -->
+    <div id="analyticsSection" class="analytics-grid">
+        <section class="card">
+            <h2>Sensor Reading Priority Distribution</h2>
+            <div id="priorityChart">
+                <p class="analytics-note">Loading priority data…</p>
+            </div>
+            <p class="analytics-note">
+                Based on the latest readings returned by the API (up to 100).
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>Maintenance Job Status</h2>
+            <div id="jobStatusChart">
+                <p class="analytics-note">Loading job data…</p>
+            </div>
+            <p class="analytics-note">
+                Counts are based on jobs returned by the scheduler endpoint.
+            </p>
+        </section>
+    </div>
+
+    <!-- Sensor Input and Prediction Results -->
+    <div class="layout">
+
+        <section id="predictionSection" class="card">
+            <h2>Machine Sensor Readings</h2>
+            <p>Enter the readings for the machine you want to evaluate.</p>
+
+            <form id="predictionForm">
+
+                <label for="machine">Machine</label>
+                <select id="machine" required>
+                    <option value="1">M-101 — CNC Machine 01</option>
+                    <option value="2">M-102 — Conveyor Belt 01</option>
+                    <option value="3">M-103 — Hydraulic Press 01</option>
+                </select>
+
+                <label for="temperature">Temperature</label>
+                <input id="temperature" type="number" step="any"
+                       value="85" required>
+
+                <label for="vibration">Vibration</label>
+                <input id="vibration" type="number" min="0" step="any"
+                       value="0.8" required>
+
+                <label for="pressure">Pressure</label>
+                <input id="pressure" type="number" min="0" step="any"
+                       value="30" required>
+
+                <label for="runtime">Runtime (hours)</label>
+                <input id="runtime" type="number" min="0" step="any"
+                       value="1200" required>
+
+                <button class="full-button" type="submit" id="predictButton">
+                    Predict Machine Failure
+                </button>
+
+            </form>
+        </section>
+
+        <section id="resultsSection" class="card">
+            <h2>Prediction Results</h2>
+
+            <div class="metric">
+                <span>Machine</span>
+                <h3 id="resultMachine">M-101</h3>
+            </div>
+
+            <div class="metric">
+                <span>Predicted Failure</span>
+                <h3 id="resultPrediction">--</h3>
+            </div>
+
+            <div class="metric">
+                <span>Estimated Failure Probability</span>
+                <h3 id="resultRisk">--</h3>
+            </div>
+
+            <div class="metric">
+                <span>Maintenance Priority Score</span>
+                <h3 id="resultPriorityScore">--</h3>
+            </div>
+
+            <div class="metric">
+                <span>Maintenance Priority</span>
+                <h3 id="resultPriority">--</h3>
+            </div>
+
+            <div id="message" role="status" aria-live="polite">
+                Enter sensor readings and click Predict Machine Failure.
+            </div>
+
+            <p class="note">
+                Predictions depend on the trained model and its training data.
+                Risk scores are estimates and should not replace real machine
+                safety checks. Maintenance priority uses the configured
+                risk and machine criticality rules.
+            </p>
+        </section>
+
+    </div>
+
+    <!-- Sensor Reading History -->
+    <section id="historySection" class="card history-card">
+        <h2>Recent Sensor Readings</h2>
+        <p>Readings saved in the database through the prediction API.</p>
+
+        <button id="refreshButton" type="button">Refresh History</button>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reading ID</th>
+                        <th>Machine ID</th>
+                        <th>Temperature</th>
+                        <th>Vibration</th>
+                        <th>Pressure</th>
+                        <th>Runtime</th>
+                        <th>Prediction</th>
+                        <th>Risk</th>
+                        <th>Priority Score</th>
+                        <th>Maintenance Priority</th>
+                        <th>Recorded At</th>
+                    </tr>
+                </thead>
+
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="11">Loading readings...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Maintenance Job Scheduler -->
+    <section id="jobsSection" class="card history-card">
+        <h2>Maintenance Job Scheduler</h2>
+        <p>View generated maintenance jobs, assigned technicians, and job priorities.</p>
+
+        <button id="refreshJobsButton" type="button">
+            Refresh Maintenance Jobs
+        </button>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Machine</th>
+                        <th>Priority Score</th>
+                        <th>Technician</th>
+                        <th>Status</th>
+                        <th>Scheduled At</th>
+                    </tr>
+                </thead>
+
+                <tbody id="jobsBody">
+                    <tr>
+                        <td colspan="6">Loading maintenance jobs...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Spare Parts Inventory -->
+    <section id="inventorySection" class="card history-card">
+        <h2>Spare Parts Inventory</h2>
+        <p>Current spare-part quantities and minimum stock levels.</p>
+
+        <button id="refreshPartsButton" type="button">
+            Refresh Spare Parts
+        </button>
+
+        <p class="inventory-meta" id="inventoryMessage">
+            Loading inventory...
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Part ID</th>
+                        <th>Part Name</th>
+                        <th>Available Quantity</th>
+                        <th>Minimum Quantity</th>
+                        <th>Stock Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="partsBody">
+                    <tr>
+                        <td colspan="5">Loading spare parts...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    Predictive Maintenance Task Scheduler · Academic Project
+</footer>
+    <script>
+        document.getElementById("refreshButton")
+    .addEventListener("click", loadHistory);
+
+        const API_URL = "http://127.0.0.1:8001";
+        const machineNames = {
+
+            1: "M-101",
+
+            2: "M-102",
+
+            3: "M-103"
+
+        };
+        async function checkBackend() {
+
+            const status = document.getElementById("apiStatus");
+            try {
+
+                const response = await fetch(API_URL + "/health");
+
+                const data = await response.json();
+                if (!response.ok || data.api !== "running") {
+
+                    throw new Error("Backend unavailable");
+
+                }
+                status.textContent = data.database === "connected"
+
+                    ? "API connected · MySQL connected"
+
+                    : "API connected · Database status unknown";
+
+
+
+                status.style.color = data.database === "connected"
+
+                    ? "#0d9488" : "#d97706";
+
+            } catch (error) {
+
+                status.textContent =
+
+                    "Connection failed. Start the FastAPI server on port 8001.";
+
+                status.style.color = "#dc2626";
+
+            }
+
+        }
+        async function loadHistory() {
+    const historyBody = document.getElementById("historyBody");
+
+    if (!historyBody) {
+        console.error("History table body with id='historyBody' was not found.");
+        return;
+    }
+
+    historyBody.innerHTML = "<tr><td colspan='11'>Loading readings...</td></tr>";
+
+    try {
+        const response = await fetch(API_URL + "/readings");
+
+        if (!response.ok) {
+            throw new Error("Backend returned status " + response.status);
+        }
+
+        const readings = await response.json();
+        
+const priorityOrder = {
+    critical: 1,
+    high: 2,
+    medium: 3,
+    low: 4
+};
+
+readings.sort((a, b) => {
+    const priorityA = priorityOrder[
+        String(a.maintenance_priority || "").toLowerCase()
+    ] || 5;
+
+    const priorityB = priorityOrder[
+        String(b.maintenance_priority || "").toLowerCase()
+    ] || 5;
+
+    if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+    }
+
+    return Number(b.failure_risk_percent || 0) -
+           Number(a.failure_risk_percent || 0);
+});
+
+
+        if (!Array.isArray(readings)) {
+            throw new Error("Invalid readings response.");
+        }
+
+        historyBody.innerHTML = "";
+
+        if (readings.length === 0) {
+            historyBody.innerHTML = "<tr><td colspan='11'>No readings saved yet.</td></tr>";
+            return;
+        }
+
+        readings.forEach(reading => {
+            const row = document.createElement("tr");
+
+            const values = [
+                reading.reading_id,
+                machineNames[reading.machine_id] || "Machine " + reading.machine_id,
+                reading.temperature,
+                reading.vibration,
+                reading.pressure,
+                reading.runtime,
+                Number(reading.failure_prediction) === 1
+                    ? "Failure predicted"
+                    : "No failure predicted",
+                reading.failure_risk_percent != null
+                    ? reading.failure_risk_percent + "%"
+                    : "—",
+                reading.priority_score ?? "—",
+                reading.maintenance_priority ?? "—",
+                reading.created_at
+                    ? new Date(reading.created_at).toLocaleString()
+                    : "—"
+            ];
+
+            values.forEach((value, index) => {
+                const cell = document.createElement("td");
+                cell.textContent = value ?? "—";
+
+                if (index === 6) {
+                    cell.className =
+                        Number(reading.failure_prediction) === 1
+                            ? "risk-high"
+                            : "risk-normal";
+                }
+
+                if (index === 9 && reading.maintenance_priority) {
+                    const priority = reading.maintenance_priority.toLowerCase();
+
+                    if (["critical", "high", "medium", "low"].includes(priority)) {
+                        cell.classList.add("priority-" + priority);
+                    }
+                }
+
+                row.appendChild(cell);
+            });
+
+            historyBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("History loading failed:", error);
+        historyBody.innerHTML =
+            "<tr><td colspan='11'>Unable to load history. Check the backend and browser console.</td></tr>";
+    }
+}
+
+        async function loadAnalytics() {
+            try {
+                const [readingsResponse, jobsResponse] = await Promise.all([
+                    fetch(API_URL + "/readings"),
+                    fetch(API_URL + "/scheduler/jobs")
+                ]);
+                if (!readingsResponse.ok || !jobsResponse.ok) {
+                    throw new Error("One or more dashboard endpoints returned an error.");
+                }
+                const readings = await readingsResponse.json();
+                const jobs = await jobsResponse.json();
+                const readingList = Array.isArray(readings) ? readings : (readings.readings || readings.items || []);
+                const jobList = Array.isArray(jobs) ? jobs : (jobs.jobs || jobs.items || []);
+
+                document.getElementById("metricReadings").textContent = readingList.length;
+                document.getElementById("metricMachines").textContent = new Set(readingList.map(r => r.machine_id).filter(v => v != null)).size;
+                document.getElementById("metricPending").textContent = jobList.filter(j => String(j.status || "").toLowerCase() === "pending").length;
+                document.getElementById("metricScheduled").textContent = jobList.filter(j => ["scheduled", "in progress"].includes(String(j.status || "").toLowerCase())).length;
+
+                const priorityCounts = { Critical: 0, High: 0, Medium: 0, Low: 0, Unknown: 0 };
+                readingList.forEach(r => {
+                    const raw = String(r.maintenance_priority || "Unknown").toLowerCase();
+                    const key = raw === "critical" ? "Critical" : raw === "high" ? "High" : raw === "medium" ? "Medium" : raw === "low" ? "Low" : "Unknown";
+                    priorityCounts[key]++;
+                });
+                renderBars("priorityChart", Object.entries(priorityCounts).map(([label, count]) => ({
+                    label, count, className: label.toLowerCase()
+                })), "");
+
+                const statuses = {};
+                jobList.forEach(j => {
+                    const status = j.status || "Unknown";
+                    statuses[status] = (statuses[status] || 0) + 1;
+                });
+                const statusEntries = Object.entries(statuses).map(([label, count]) => ({ label, count }));
+                renderBars("jobStatusChart", statusEntries.length ? statusEntries : [{ label: "No jobs", count: 0 }], "");
+            } catch (error) {
+                document.getElementById("priorityChart").textContent = "Unable to load analytics. Check /readings and /scheduler/jobs.";
+                document.getElementById("jobStatusChart").textContent = "Unable to load analytics. Check /readings and /scheduler/jobs.";
+            }
+        }
+        async function loadMaintenanceJobs() {
+    const jobsBody = document.getElementById("jobsBody");
+    jobsBody.innerHTML =
+
+        "<tr><td colspan='6'>Loading maintenance jobs...</td></tr>";
+    try {
+
+        const response = await fetch(API_URL + "/scheduler/jobs");
+        if (!response.ok) {
+
+            throw new Error("Could not retrieve maintenance jobs");
+
+        }
+        const jobs = await response.json();
+        
+jobs.sort((a, b) => {
+    const scoreDifference =
+        Number(b.priority_score || 0) -
+        Number(a.priority_score || 0);
+
+    if (scoreDifference !== 0) {
+        return scoreDifference;
+    }
+
+    return Number(a.job_id || 0) -
+           Number(b.job_id || 0);
+});
+
+        jobsBody.innerHTML = "";
+        if (jobs.length === 0) {
+            jobsBody.innerHTML =
+                "<tr><td colspan='6'>No maintenance jobs found. Generate jobs first.</td></tr>";
+            return;
+        }
+        jobs.forEach(job => {
+            const row = document.createElement("tr");
+            const values = [
+                job.job_id,
+                job.machine_name || "Machine " + job.machine_id,
+                job.priority_score ?? "—",
+                job.technician_name || "Unassigned",
+                job.status || "Pending",
+                job.scheduled_at
+                    ? new Date(job.scheduled_at).toLocaleString()
+                    : "Not scheduled"
+            ];
+            values.forEach((value, index) => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                if (index === 2 && Number(job.priority_score) >= 70) {
+                    cell.className = "priority-critical";
+                }
+                row.appendChild(cell);
+            });
+            jobsBody.appendChild(row);
+        });
+    } catch (error) {
+        jobsBody.innerHTML =
+
+            "<tr><td colspan='6'>Unable to load jobs. Check the backend and /scheduler/jobs endpoint.</td></tr>";
+    }
+}
+
+async function loadSpareParts() {
+    const partsBody = document.getElementById("partsBody");
+    const message = document.getElementById("inventoryMessage");
+
+    partsBody.innerHTML =
+        '<tr><td colspan="5">Loading spare parts...</td></tr>';
+
+    try {
+        const response = await fetch(API_URL + "/spare-parts");
+
+        if (!response.ok) {
+            throw new Error("Could not retrieve spare parts");
+        }
+
+        const parts = await response.json();
+        
+parts.sort((a, b) => {
+    const lowA = a.low_stock ? 0 : 1;
+    const lowB = b.low_stock ? 0 : 1;
+
+    if (lowA !== lowB) {
+        return lowA - lowB;
+    }
+
+    return Number(a.quantity) - Number(b.quantity);
+});
+
+        partsBody.innerHTML = "";
+
+        if (!parts.length) {
+            partsBody.innerHTML =
+                '<tr><td colspan="5">No spare parts found.</td></tr>';
+            message.textContent = "No inventory records found.";
+            return;
+        }
+
+        parts.forEach(part => {
+            const row = document.createElement("tr");
+
+            const values = [
+                part.part_id,
+                part.part_name,
+                part.quantity,
+                part.minimum_quantity ?? "Not set",
+                part.low_stock ? "Low Stock" : "In Stock"
+            ];
+
+            values.forEach((value, index) => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+
+                if (index === 4) {
+                    cell.className = part.low_stock
+                        ? "stock-low"
+                        : "stock-good";
+                }
+
+                row.appendChild(cell);
+            });
+
+            partsBody.appendChild(row);
+        });
+
+        message.textContent = "Inventory loaded successfully.";
+    } catch (error) {
+        partsBody.innerHTML =
+            '<tr><td colspan="5">Unable to load inventory. Check the backend.</td></tr>';
+        message.textContent = "Inventory could not be loaded.";
+    }
+}
+
+        document.getElementById("predictionForm")
+            .addEventListener("submit", async function(event) {
+                event.preventDefault();
+                const button = document.getElementById("predictButton");
+                const message = document.getElementById("message");
+                const machineId = Number(
+                    document.getElementById("machine").value
+                );
+                const sensorData = {
+                    machine_id: machineId,
+                    temperature: Number(
+                        document.getElementById("temperature").value
+                    ),
+                    vibration: Number(
+                        document.getElementById("vibration").value
+                    ),
+                    pressure: Number(
+                        document.getElementById("pressure").value
+                    ),
+                    runtime: Number(
+                        document.getElementById("runtime").value
+                    )
+                };
+                if (!Number.isInteger(machineId) || machineId < 1 ||
+                    Object.values(sensorData).some(
+                        value => !Number.isFinite(value)
+                    )) {
+                    message.textContent =
+                        "Please enter valid machine and sensor readings.";
+                    return;
+                }
+                button.disabled = true;
+                button.textContent = "Predicting...";
+                message.textContent = "Sending readings to the ML model...";
+                try {
+                    const response = await fetch(API_URL + "/predict", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(sensorData)
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw new Error(
+                            result.detail
+                                ? JSON.stringify(result.detail)
+                                : "Prediction request failed"
+                        );
+                    }
+                    document.getElementById("resultMachine").textContent =
+                        machineNames[machineId] || "Machine " + machineId;
+                    document.getElementById("resultPrediction").textContent =
+                        Number(result.failure_prediction) === 1
+                            ? "Failure predicted"
+                            : "No failure predicted";
+                    document.getElementById("resultRisk").textContent =
+                        result.failure_risk_percent + "%";
+                    document.getElementById("resultPriorityScore").textContent =
+                        result.priority_score ?? "--";
+                    const priorityElement =
+                        document.getElementById("resultPriority");
+                    const priority = result.maintenance_priority || "Unknown";
+                    priorityElement.textContent = priority;
+                    priorityElement.className = "";
+                    const allowedPriorities = [
+                        "critical", "high", "medium", "low"
+                    ];
+                    if (allowedPriorities.includes(priority.toLowerCase())) {
+
+                        priorityElement.classList.add(
+
+                            "priority-" + priority.toLowerCase()
+                        );
+                    }
+                    message.textContent =
+                        "Prediction successful. Reading saved to MySQL.";
+                    await loadHistory();
+                } catch (error) {
+                    message.textContent =
+                        "Prediction failed: " + error.message;
+                } finally {
+                    button.disabled = false;
+                    button.textContent = "Predict Machine Failure";
+                }
+            });
+        document.getElementById("refreshButton")
+            .addEventListener("click", loadHistory);
+        document.getElementById("refreshJobsButton")
+            .addEventListener("click", loadMaintenanceJobs);
+        document.getElementById("refreshJobsButton")
+            .addEventListener("click", loadAnalytics);
+        checkBackend();
+        loadHistory();
+        loadMaintenanceJobs();
+        loadAnalytics();
+        loadSpareParts();
+        document.getElementById("refreshPartsButton")
+        .addEventListener("click", loadSpareParts);
+        
+const currentRole = sessionStorage.getItem("selectedRole") || "user";
+
+document.getElementById("currentRole").textContent =
+    currentRole === "technician" ? "🔧 Technician" : "🏭 Factory User";
+
+document.getElementById("logoutButton").addEventListener("click", () => {
+    sessionStorage.removeItem("selectedRole");
+    window.location.href = "login.html";
+});
+
+
+const activeRole = sessionStorage.getItem("selectedRole");
+
+if (!activeRole) {
+    window.location.replace("login.html");
+} else {
+    const userSections = [
+        "summarySection",
+        "analyticsSection",
+        "predictionSection",
+        "resultsSection",
+        "historySection",
+        "jobsSection",
+        "inventorySection"
+    ];
+
+    userSections.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) section.style.display = "";
+    });
+
+    if (activeRole === "user") {
+        ["jobsSection", "inventorySection"].forEach(id => {
+            const section = document.getElementById(id);
+            if (section) section.style.display = "none";
+        });
+    } else if (activeRole === "technician") {
+        ["predictionSection", "resultsSection"].forEach(id => {
+            const section = document.getElementById(id);
+            if (section) section.style.display = "none";
+        });
+    }
+
+    const roleLabel = document.getElementById("currentRole");
+
+    if (roleLabel) {
+        roleLabel.textContent =
+            activeRole === "technician"
+                ? "🔧 Technician Dashboard"
+                : "🏭 Factory User Dashboard";
+    }
+}
+
+const logoutButton = document.getElementById("logoutButton");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+        sessionStorage.removeItem("selectedRole");
+        window.location.replace("login.html");
+    });
+}
+
+    </script>
+</body>
+</html>
